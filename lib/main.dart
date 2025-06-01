@@ -141,14 +141,38 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class FavoritesScreen extends StatelessWidget {
+class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});
 
   @override
+  State<FavoritesScreen> createState() => _FavoritesScreenState();
+}
+
+class _FavoritesScreenState extends State<FavoritesScreen> {
+  late Box favoritesBox;
+  late List<String> favoriteIds;
+  late List<Quote> favoriteQuotes;
+
+  @override
+  void initState() {
+    super.initState();
+    favoritesBox = Hive.box('favorites');
+    _loadFavorites();
+  }
+
+  void _loadFavorites() {
+    favoriteIds = favoritesBox.keys.where((k) => favoritesBox.get(k) == true).cast<String>().toList();
+    favoriteQuotes = allQuotes.where((q) => favoriteIds.contains(q.id)).toList();
+    setState(() {});
+  }
+
+  void _toggleFavorite(Quote quote) async {
+    await favoritesBox.put(quote.id, false);
+    _loadFavorites();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final favoritesBox = Hive.box('favorites');
-    final favoriteIds = favoritesBox.keys.where((k) => favoritesBox.get(k) == true).toList();
-    final favoriteQuotes = allQuotes.where((q) => favoriteIds.contains(q.id)).toList();
     return Scaffold(
       appBar: AppBar(title: const Text('Favorite Quotes')),
       body: favoriteQuotes.isEmpty
@@ -160,6 +184,11 @@ class FavoritesScreen extends StatelessWidget {
                 return ListTile(
                   title: Text('"${quote.text}"'),
                   subtitle: quote.author != null ? Text('- ${quote.author!}') : null,
+                  trailing: IconButton(
+                    icon: const Icon(Icons.favorite, color: Colors.red),
+                    onPressed: () => _toggleFavorite(quote),
+                    tooltip: 'Remove from favorites',
+                  ),
                 );
               },
             ),
