@@ -4,6 +4,5 @@ A daily quote application
 
 ## Getting Started
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+For a quick play of this app, visit
+[Appetize](https://appetize.io/app/b_75tmp5tkufh5tsgallsw2ct2yq).
